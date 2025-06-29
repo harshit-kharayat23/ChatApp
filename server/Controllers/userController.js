@@ -1,6 +1,7 @@
-import { generateToken } from "../lib/utils";
-import User from "../models/User";
+import { generateToken } from "../lib/utils.js";
+import User from "../models/User.js";
 import bcrypt from "bcrypt"
+import cloudinary from '../lib/cloudinary.js'
 
 export const signUp=async(req,res)=>{
 
@@ -35,7 +36,7 @@ export const signUp=async(req,res)=>{
 
        await newUser.save();
 
-       generateToken(newUser._id)
+       const token=generateToken(newUser._id)
        return res.status(201).json({
             success:true,
             message:"Account Created",
@@ -81,7 +82,11 @@ export const login=async(req,res)=>{
             })
         }
         const token=generateToken(user._id);
-        res.co
+        res.cookie("token",token,{
+            httpOnly:true,
+            maxAge:3 * 24 * 60 * 60 * 1000,
+
+        })
 
 
         return res.status(201).json({
@@ -101,3 +106,77 @@ export const login=async(req,res)=>{
 
 
 }
+
+export const logout=async(req,res)=>{
+
+
+    res.cookie("token",{
+        maxAge:0,
+        httpOnly:true,
+    })
+    return res.status(200).json({
+    success: true,
+    message: "Logged out successfully!",
+  });
+
+
+
+}
+
+// if user is authenticated or not
+
+export const checkAuth=(req,res)=>{
+
+    res.json({
+        success:true,
+        user:req.user,
+    })
+
+
+}
+
+
+
+// update user profile details
+
+
+export const updateProfile=async(req,res)=>{
+
+        try{
+
+            const {photo,fullName,bio}=req.body;
+            const userId=req.user._id;
+            let updatedUser;
+            if(!profile){
+                    updatedUser=await User.findByIdAndUpdate(userId,{ 
+                        fullName,
+                        bio
+                    },{new:true})
+            }else{
+                const upload=await cloudinary.uploader.upload(photo)
+
+                updatedUser=await User.findByIdAndUpdate(userId,{
+                    photo:upload.secure_url,
+                    bio,
+                    fullName,
+                },{new:true})
+            }
+
+            return res.status(200).json({
+                success:true,
+                message:"Profile Updated Successfully!",
+                user:updatedUser,
+            })
+
+
+        }catch(err){
+                return res.status(500).json({
+            success:false,
+            message:"Error: "+err.message
+        })
+        }
+
+
+
+}
+
