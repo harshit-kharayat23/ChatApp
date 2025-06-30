@@ -1,7 +1,30 @@
 import React from 'react'
 import assets, { imagesDummyData } from '../assets/assets'
+import axios from 'axios'
+import { BACKEND_URL } from '../lib/utils'
+import toast from 'react-hot-toast'
+import { useDispatch } from "react-redux";
+import { removeUser } from "../Redux/userSlice";
 
 const RightSideBar = ({selectedUser}) => {
+  
+  const dispatch=useDispatch();
+
+  const handleLogout=async()=>{
+
+        try{
+          const response=await axios.post(BACKEND_URL +"/logout",{},{withCredentials:true});
+          dispatch(removeUser());
+          toast.success(response.data.message );
+
+
+        }catch(err){
+            const message=err?.response?.data?.message;
+              toast.error(message)
+        }
+        
+
+  }
  return selectedUser && (
   <div className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll ${selectedUser ? "max-md:hidden" : ""}`}>
     <div className='pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto'>
@@ -25,7 +48,7 @@ const RightSideBar = ({selectedUser}) => {
   </div>
 </div>
 
-<button className='absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm font-light py-2 px-20 rounded-full cursor-pointer'
+<button onClick={handleLogout}  className='absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm font-light py-2 px-20 rounded-full cursor-pointer'
 >
   Logout
 </button>

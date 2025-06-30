@@ -1,13 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import assets from '../assets/assets';
+import { useSelector } from 'react-redux';
+
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-
-  const [selectedImg, setSelectedImg] = useState(null);
-  const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
+  const user=useSelector(store=>store.user.loggedInUser);
+  
+  const [name, setName] = useState(user?.user?.fullName || " ");
+  const [bio, setBio] = useState( user?.user?.bio|| "");
 
   // Set default values from authUser
   
@@ -15,19 +17,6 @@ const ProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedImg) {
-      await updateProfile({ fullName: name, bio });
-      navigate("/");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedImg);
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      await updateProfile({ photo: base64Image, fullName: name, bio });
-      navigate("/");
-    };
   };
 
 
@@ -40,6 +29,7 @@ const ProfilePage = () => {
           {/* Image Upload Input */}
           <label htmlFor="avatar" className='flex items-center gap-3 cursor-pointer'>
             <input
+              
               onChange={(e) => setSelectedImg(e.target.files[0])}
               type="file"
               id="avatar"
@@ -47,7 +37,7 @@ const ProfilePage = () => {
               hidden
             />
             <img
-              src=""
+              src={user?.user?.photo}
               alt="profile-preview"
               className='w-12 h-12 rounded-full object-cover'
             />
@@ -83,7 +73,7 @@ const ProfilePage = () => {
         {/* Right Side Profile Preview */}
         <img
           className="max-w-44 aspect-square rounded-full mx-10 max-sm:mt-10 object-cover"
-          src=""
+          src={user?.user?.photo}
           alt="profile-preview"
         />
       </div>

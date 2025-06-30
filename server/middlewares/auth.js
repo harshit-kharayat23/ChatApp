@@ -5,8 +5,7 @@ import "dotenv/config";
 export const userAuth = async (req, res, next) => {
   try {
     const { token } = req.cookies; 
-    console.log("Cookies received:", req.cookies);
-    console.log("Token value:", req.cookies.token);
+ 
 
 
     if (!token) {
@@ -23,7 +22,6 @@ export const userAuth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    console.log(err);
         return res.status(401).json({
       success: false,
       message: err.name === "JsonWebTokenError" ? "Invalid token" : err.message,

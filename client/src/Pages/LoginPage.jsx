@@ -4,12 +4,14 @@ import { BACKEND_URL } from "../lib/utils";
 import { Link, useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { addUser } from "../Redux/userSlice";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate=useNavigate();
+  const dispatch=useDispatch();
 
 
   const handleLogin = async (e) => {
@@ -20,10 +22,11 @@ const LoginPage = () => {
         { emailId: email, password },
         { withCredentials: true }
       );
+      dispatch(addUser(response?.data?.user));
+      
       setEmail("");
       setPassword("");
       toast.success(response.data.message || "Login successful!");
-      navigate("/profile");
 
     } catch (err) {
         const message=err?.response?.data?.message;

@@ -4,12 +4,16 @@ import { BACKEND_URL } from "../lib/utils";
 import { Link } from "react-router-dom";
 import assets from "../assets/assets";
 import toast from "react-hot-toast";
+import {useDispatch, useSelector} from 'react-redux'
+import { addUser } from "../Redux/userSlice";
 
 const SignupPage = () => {
   const [fullName, setFullName] = useState("");
   const [emailId, setEmailId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch= useDispatch();
+
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -19,14 +23,19 @@ const SignupPage = () => {
         { fullName, emailId, password },
         { withCredentials: true }
       );
+      console.log(response);
+      toast.success(response?.data?.message || "SignUp successful!");
+      dispatch(addUser(response?.data?.user))
       setEmailId("");
       setFullName("");
       setPassword("");
-      toast.success(response.data.message || "SignUp successful!");
-    } catch (err) {
-      const message=err?.response?.data?.message;
-      toast.error(message)
+      
+    }catch (err) {
+  console.log("Catch block fired with error:", err);
+  const message = err?.response?.data?.message || "Something went wrong.";
+  toast.error(message);
 }
+
 
   };
 
