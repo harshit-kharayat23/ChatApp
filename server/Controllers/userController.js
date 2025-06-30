@@ -1,11 +1,10 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import cloudinary from "../lib/cloudinary.js";
-
+import cloudinary, { uploadOnCloudinary } from "../lib/cloudinary.js";
 
 export const signUp = async (req, res) => {
-  const { fullName, emailId, password} = req.body;
+  const { fullName, emailId, password } = req.body;
 
   try {
     if (!fullName || !emailId || !password) {
@@ -30,12 +29,12 @@ export const signUp = async (req, res) => {
       emailId,
       password: hashedPassword,
     });
- 
+
     const token = generateToken(newUser._id);
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, 
+      secure: false,
       sameSite: "Lax",
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
@@ -52,7 +51,6 @@ export const signUp = async (req, res) => {
     });
   }
 };
-
 
 export const login = async (req, res) => {
   const { emailId, password } = req.body;
@@ -103,7 +101,6 @@ export const login = async (req, res) => {
   }
 };
 
-
 export const logout = async (req, res) => {
   res.cookie("token", "", {
     httpOnly: true,
@@ -116,7 +113,6 @@ export const logout = async (req, res) => {
   });
 };
 
-
 export const checkAuth = (req, res) => {
   return res.status(200).json({
     success: true,
@@ -124,38 +120,38 @@ export const checkAuth = (req, res) => {
   });
 };
 
-
 export const updateProfile = async (req, res) => {
   try {
-    const { photo, fullName, bio } = req.body;
+    const { fullName, bio } = req.body;
+    let image;
+
+    if (req.file) {
+      image = await uploadOnCloudinary(req.file.path);
+    }
+
     const userId = req.user._id;
 
-    let updatedUser;
-
-    if (!photo) {
-      updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { fullName, bio },
-        { new: true }
-      );
-    } else {
-      const uploadedImage = await cloudinary.uploader.upload(photo);
-      updatedUser = await User.findByIdAndUpdate(
-        userId,
-        {
-          fullName,
-          bio,
-          photo: uploadedImage.secure_url,
-        },
-        { new: true }
-      );
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found." });
     }
+
+    // Prepare update data
+    const updateData = { fullName, bio };
+    if (image) updateData.photo = image;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    );
 
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully!",
       user: updatedUser,
     });
+
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -164,31 +160,24 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-
-export const getProfile=async(req,res)=>{
-
-      const userId=req.user._id;
-      try{
-        const userDetails=await User.findById(userId).select("-password");
-          if(!userDetails){
-                return res.status(500).json({
-                success:false,
-                message:"User Details not found",
-           })
-          }
-          res.status(200).json({
-            success:true,
-            user:userDetails,
-          })
-
-      }catch(err){
-        res.status(500).json({
-          success:false,
-          message:"Error: "+err.message,
-        })
-      }
-
-      
-
-
-}
+export const getProfile = async (req, res) => {
+  const userId = req.user._id;
+  try {
+    const userDetails = await User.findById(userId).select("-password");
+    if (!userDetails) {
+      return res.status(500).json({
+        success: false,
+        message: "User Details not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      user: userDetails,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error: " + err.message,
+    });
+  }
+};
