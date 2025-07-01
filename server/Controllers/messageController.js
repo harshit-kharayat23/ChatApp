@@ -1,9 +1,10 @@
 
 import Message from "../models/Message.js";
 import User from "../models/User.js";
-import cloudinary from '../lib/cloudinary.js'
+import cloudinary, { uploadOnCloudinary } from '../lib/cloudinary.js'
 
 import { io ,userSocketMap } from "../server.js";
+import Conversation from "../models/Conversation.js";
 
 // get all users for side bar
 
@@ -47,28 +48,27 @@ export const getMessages=async(req,res)=>{
 
             const {targetId}=req.params;
 
-            const myId=req.user._id;
+            const senderId=req.user._id;
 
-            const messages=await Message.find({
-                $or:[
+            const conversation=await Conversation.find({
+               participants:{ $all:[
                     {
-                        senderId:myId,
-                        targetId:targetId,
+                        senderId,
+                        targetId,
                     },
-                    {
-                        senderId:targetId,
-                        targetId:myId,
-                    }
+                    
                 ]
-            })
+            }
+            }).populate("messages")
 
-            await Message.updateMany({
-                senderId:myId,
-                targetId:targetId,
-            },{seen:true},{new:true}) 
-            res.json({
-                success:true,
-                messages,
+            if(!conversation){
+            return res.status(400).json({
+                message:"conversation not found"
+            })
+           
+        }
+         return res.status(200).json({
+                data:conversation?.messages,
             })
 
 
@@ -112,33 +112,48 @@ export const markMessageAsSeen=async(req,res)=>{
 export const sendMessage=async(req,res)=>{
 
     try{
-        const {text,image}=req.body;
-        const targetId=req.params;
-        const userId=req._id;
-        let imageUrl;
-        if(image){
-            const response= await cloudinary.uploader.upload(photo);
-            imageUrl=response.secure_url;
+        const {text}=req.body;
+        const {targetId}=req.params;
+        const userId = req.user._id;
 
+        let image;
+        if(req.file){
+            image=await uploadOnCloudinary(req.file.path)
         }
-       const newMessage=await Message.create({
+
+        let conversation=await Conversation.findOne({
+            participants:{$all:[userId,targetId]}
+        });
+
+        
+       let newMessage=await Message.create({
             senderId:userId,
             targetId,
-            image:imageUrl,
-            text
+            image,
+            text,
 
        })
+       if(!conversation){
+             conversation=await Conversation.create({
+                participants:[userId,targetId],
+                messages:[newMessage._id]
+             }) 
+        }else{
+            conversation.messages.push(newMessage._id)
+            await conversation.save();
+        }
+
 
        // emit  the new message to the reciever 's socket
 
-       const targetSocketId=userSocketMap[targetId];
-       if(targetSocketId){
-            io.to(targetSocketId).emit("newMessage",newMessage)
-       }
+    //    const targetSocketId=userSocketMap[targetId];
+    //    if(targetSocketId){
+    //         io.to(targetSocketId).emit("newMessage",newMessage)
+    //    }
         
 
 
-       res.json(({
+       res.status(201).json(({
         success:true,
         newMessage,
        }))
@@ -154,3 +169,4 @@ export const sendMessage=async(req,res)=>{
 
 
 }
+
