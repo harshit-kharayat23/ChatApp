@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import assets, { messagesDummyData } from "../assets/assets";
 import { formatMessageTime } from "../lib/utils";
-import {useSelector} from 'react-redux'
+import { useSelector } from "react-redux";
+import { RiEmojiStickerFill } from "react-icons/ri";
+import EmojiPicker from "emoji-picker-react";
 
-const ChatContainer = ({selectedUser}) => {
+const ChatContainer = ({ selectedUser, setSelectUser }) => {
   const scrollEnd = useRef();
-  const {loggedInUser,otherUsers}=useSelector(store=>store?.user);
-
-
+  const { loggedInUser, otherUsers } = useSelector((store) => store?.user);
+  const [showPicker, setShowPicker] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (scrollEnd.current) {
-      scrollEnd.current.scrollIntoView({ behavior: "smooth" }); 
+      scrollEnd.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []);
+  }, [messagesDummyData]);
 
   return selectedUser ? (
     <div className="h-full overflow-y-scroll relative backdrop-blur-lg">
@@ -25,7 +27,7 @@ const ChatContainer = ({selectedUser}) => {
           alt="User"
         />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
-          {}
+          {selectedUser?.fullName || "User"}
           <span className="w-2 h-2 rounded-full bg-green-500"></span>
         </p>
         <img
@@ -50,12 +52,12 @@ const ChatContainer = ({selectedUser}) => {
               msg.senderId === "680f50e4f10f3cd28382ecf9"
                 ? "justify-end"
                 : "justify-start flex-row-reverse"
-            }`} 
+            }`}
           >
             {msg.image ? (
               <img
                 src={msg.image}
-                alt="Sent media" // ✅ better alt
+                alt="Sent media"
                 className="max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8"
               />
             ) : (
@@ -79,9 +81,7 @@ const ChatContainer = ({selectedUser}) => {
                 alt="avatar"
                 className="w-7 rounded-full"
               />
-              <p className="text-gray-500">
-                {formatMessageTime(msg.createdAt)}
-              </p>
+              <p className="text-gray-500">{formatMessageTime(msg.createdAt)}</p>
             </div>
           </div>
         ))}
@@ -93,26 +93,53 @@ const ChatContainer = ({selectedUser}) => {
       {/* ------- bottom area ------- */}
       <div className="absolute bottom-0 left-0 right-0 flex items-center gap-3 p-3">
         <div className="flex-1 flex items-center bg-gray-100/12 px-3 rounded-full">
+          <RiEmojiStickerFill
+            onClick={() => setShowPicker((prev) => !prev)}
+            className="h-[25px] w-[25px] cursor-pointer"
+          />
+
           <input
             type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
             placeholder="Send a message"
             className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400"
           />
+
           <input type="file" id="image" accept="image/png, image/jpeg" hidden />
           <label htmlFor="image">
             <img
               src={assets.gallery_icon}
-              alt="Upload" // ✅ better alt
+              alt="Upload"
               className="w-5 mr-2 cursor-pointer"
             />
           </label>
         </div>
-        <img src={assets.send_button} alt="Send" className="w-7 cursor-pointer" />
+        <img
+          src={assets.send_button}
+          alt="Send"
+          className="w-7 cursor-pointer"
+          // onClick={() => sendMessage(message)}  <-- connect your send message function here
+        />
       </div>
+
+      {showPicker && (
+        <div className="absolute bottom-16 left-3 z-50">
+          <EmojiPicker
+            theme="dark"
+            
+            onEmojiClick={(emojiData) => {
+              setMessage((prev) => prev + emojiData.emoji);
+              setShowPicker(false);
+              
+            }}
+          />
+        </div>
+      )}
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center gap-2 text-gray-50 bg-white/10 max-md:hidden">
-      <img src={assets.logo_icon} className="w-16" alt="Logo" /> {/* ✅ fixed tailwind class */}
+      <img src={assets.logo_icon} className="w-16" alt="Logo" />
       <p className="text-lg font-medium text-white">Chat anytime, anywhere</p>
     </div>
   );
