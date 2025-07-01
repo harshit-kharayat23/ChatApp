@@ -25,7 +25,7 @@ const SignupPage = () => {
       );
       console.log(response);
       toast.success(response?.data?.message || "SignUp successful!");
-      dispatch(addUser(response?.data?.user))
+      dispatch(addUser(response?.data))
       setEmailId("");
       setFullName("");
       setPassword("");

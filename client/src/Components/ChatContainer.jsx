@@ -1,13 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import assets, { messagesDummyData } from "../assets/assets";
 import { formatMessageTime } from "../lib/utils";
+import {useSelector} from 'react-redux'
 
-const ChatContainer = ({ selectedUser, setSelectUser }) => {
+const ChatContainer = ({selectedUser}) => {
   const scrollEnd = useRef();
+  const {loggedInUser,otherUsers}=useSelector(store=>store?.user);
+
+
 
   useEffect(() => {
     if (scrollEnd.current) {
-      scrollEnd.current.scrollIntoView({ behavior: "smooth" }); // ✅ fixed typo
+      scrollEnd.current.scrollIntoView({ behavior: "smooth" }); 
     }
   }, []);
 
@@ -21,12 +25,12 @@ const ChatContainer = ({ selectedUser, setSelectUser }) => {
           alt="User"
         />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
-          Martin Johnson
+          {}
           <span className="w-2 h-2 rounded-full bg-green-500"></span>
         </p>
         <img
           onClick={() => setSelectUser(null)}
-          src={assets.arrow_icon}
+          src=""
           className="md:hidden max-w-7"
           alt="Back"
         />
@@ -46,7 +50,7 @@ const ChatContainer = ({ selectedUser, setSelectUser }) => {
               msg.senderId === "680f50e4f10f3cd28382ecf9"
                 ? "justify-end"
                 : "justify-start flex-row-reverse"
-            }`} // ✅ fixed alignment logic
+            }`} 
           >
             {msg.image ? (
               <img

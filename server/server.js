@@ -63,7 +63,7 @@ app.get("/api/auth",(req,res)=>{
 
 app.use("/api/auth", userRouter);       
 app.use("/api/auth", profileRouter);    
-app.use("/api/messages", messageRouter); 
+app.use("/api/auth", messageRouter); 
 
 
 

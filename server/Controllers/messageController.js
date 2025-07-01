@@ -14,8 +14,6 @@ export const  getAllUsers=async(req,res)=>{
 
             const userId=req.user._id;
             const filteredUsers=await User.find({_id:{$ne :userId}}).select('-password');
-            // count number of unseen and seen messages
-
             const unseenMessages={};
             const promises=filteredUsers.map(async(user)=>{
                 const messages=await Message.find({senderId:user._id ,targetId:userId ,seen:false})
@@ -23,20 +21,16 @@ export const  getAllUsers=async(req,res)=>{
                     unseenMessages[user._id]=messages.length;
                 }
             })
-
             await Promise.all(promises)
-            res.status(200).json({
+            return res.status(200).json({
                 success:true,
                 users:filteredUsers,
                 unseenMessages,
             })
 
 
-
-
-
         }catch(err){
-            res.status(501).json({
+            return  res.status(501).json({
                 success:false,
                 message:"ERROR :"+err.message,
             })

@@ -4,17 +4,21 @@ import axios from 'axios'
 import { BACKEND_URL } from '../lib/utils'
 import toast from 'react-hot-toast'
 import { useDispatch } from "react-redux";
-import { removeUser } from "../Redux/userSlice";
+import { addOtherUsers, addUser} from "../Redux/userSlice";
+import { useNavigate } from 'react-router-dom'
 
 const RightSideBar = ({selectedUser}) => {
   
   const dispatch=useDispatch();
+  const navigate=useNavigate();
 
   const handleLogout=async()=>{
 
         try{
           const response=await axios.post(BACKEND_URL +"/logout",{},{withCredentials:true});
-          dispatch(removeUser());
+          dispatch(addUser(null));
+          dispatch(addOtherUsers(null));
+          navigate("/login");
           toast.success(response.data.message );
 
 

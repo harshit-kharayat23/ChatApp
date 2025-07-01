@@ -4,6 +4,7 @@ const userSlice=createSlice({
         name:"user",
         initialState:{
             loggedInUser:null,
+            otherUsers:null,
         },
 
 
@@ -12,13 +13,13 @@ const userSlice=createSlice({
             addUser:(state,action)=>{
                 state.loggedInUser=action.payload
             },
-            removeUser:(state)=>{
-                state.loggedInUser=null;
+            addOtherUsers:(state,action)=>{
+                state.otherUsers=action.payload;
             }
 
         }
 
 })
 
-export const {addUser,removeUser} =userSlice.actions;
+export const {addUser,addOtherUsers} =userSlice.actions;
 export default userSlice.reducer;

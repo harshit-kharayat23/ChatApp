@@ -22,5 +22,5 @@ export const useCurrentUser = () => {
       }
     };
     fetchUser();
-  }, [userData]);
+  }, []);
 };

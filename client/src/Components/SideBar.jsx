@@ -1,9 +1,12 @@
 import React from 'react';
 import assets, { userDummyData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
+import {useSelector} from 'react-redux'
 
 const SideBar = ({ selectedUser, setSelectUser }) => {
   const navigate = useNavigate();
+
+   const {loggedInUser,otherUsers}=useSelector(store=>store?.user);
 
   const handleLogout = () => {
     navigate("/login");
@@ -15,8 +18,14 @@ const SideBar = ({ selectedUser, setSelectUser }) => {
       <div className="pb-5">
         <div className="flex justify-between items-center">
           <img src={assets.logo} className="max-w-40" alt="Logo" />
+        
           <div className="relative py-2 group">
-            <img src={assets.menu_icon} className="max-h-5 cursor-pointer" alt="Menu" />
+            <img
+              src={loggedInUser?.user?.photo || assets.avatar_icon}
+              className="w-[45px] aspect-square rounded-full bg-contain"
+              alt={loggedInUser?.user?.fullName}
+            />
+
             <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block">
               <p onClick={() => navigate("/profile")} className="cursor-pointer">Edit Profile</p>
               <hr className="my-2 border-t border-gray-500" />
@@ -38,7 +47,7 @@ const SideBar = ({ selectedUser, setSelectUser }) => {
 
       {/* User List */}
       <div className="flex flex-col">
-        {userDummyData.map((user, index) => (
+        {otherUsers?.users?.map((user, index) => (
           
           <div
             onClick={()=>{setSelectUser(user)}}
@@ -48,7 +57,7 @@ const SideBar = ({ selectedUser, setSelectUser }) => {
             }`}
           >
             <img
-              src={user?.profilePic || assets.avatar_icon}
+              src={user?.photo || assets.avatar_icon}
               className="w-[35px] aspect-square rounded-full"
               alt={user.fullName}
             />

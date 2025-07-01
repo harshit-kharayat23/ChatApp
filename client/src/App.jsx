@@ -8,10 +8,15 @@ import SignupPage from "./Pages/SignupPage";
 import { Toaster } from "react-hot-toast";
 import { useCurrentUser } from "./Hooks/useCurrentUser";
 import { useSelector } from "react-redux";
+import { useOtherUsers } from "./Hooks/getOtherUsers";
+import { useEffect } from "react";
 
 function App() {
-  useCurrentUser();
+  
+    useCurrentUser();
+    useOtherUsers();
   const userData = useSelector((state) => state?.user?.loggedInUser);
+ 
 
   return (
     <div className="bg-[url('./src/assets/bgImage.svg')] bg-cover bg-center min-h-screen">

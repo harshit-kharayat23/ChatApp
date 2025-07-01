@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { CiLogout } from "react-icons/ci";
 import { BACKEND_URL } from "../lib/utils.js";
 import { addUser } from "../Redux/userSlice.js";
 import toast from "react-hot-toast";
@@ -42,14 +43,22 @@ const ProfilePage = () => {
       setSaving(false)
       toast.success( updatedUser.data.message ||"Profile Saved")
       dispatch(addUser(updatedUser.data));
+      navigate("/");
     } catch (err) {
-      console.log(err);
-      toast.error( updatedUser.data.message||"Error Occured");
-      setSaving(false);
-    }
+  console.log(err);
+  toast.error(err?.response?.data?.message || "Error Occurred");
+  setSaving(false);
+}
+
   };
 
   return (
+    <>
+        <CiLogout 
+      onClick={() => navigate("/")}
+      className="text-3xl text-white cursor-pointer fixed top-5 right-5 z-50"
+    />
+
     <div className="min-h-screen bg-cover bg-no-repeat flex items-center justify-center">
       <div className="w-5/6 max-w-2xl backdrop-blur-2xl text-gray-300 border-2 border-gray-600 flex items-center justify-between max-sm:flex-col-reverse rounded-lg">
         <form
@@ -113,6 +122,7 @@ const ProfilePage = () => {
         />
       </div>
     </div>
+    </>
   );
 };
 
