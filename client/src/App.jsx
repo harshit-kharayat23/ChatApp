@@ -15,7 +15,7 @@ function App() {
   
     useCurrentUser();
     useOtherUsers();
-  const userData = useSelector((state) => state?.user?.loggedInUser);
+  const {userData} = useSelector((state) => state?.user);
  
 
   return (

@@ -6,16 +6,19 @@ const messageSchema=new mongoose.Schema({
 
         senderId:{
             type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            ref:"User",
+            required:true,
         },
 
         targetId:{
             type:mongoose.Schema.Types.ObjectId,
-            ref:"User"
+            ref:"User",
+            required:true,
         },
         text:{
             type:String,
             default:"",
+              trim: true, 
 
         },
         image:{

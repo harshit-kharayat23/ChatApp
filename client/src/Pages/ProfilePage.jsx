@@ -10,12 +10,12 @@ import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user.loggedInUser);
+  const {userData} = useSelector((store) => store?.user);
   const dispatch = useDispatch();
 
-  const [name, setName] = useState(user?.user?.fullName || "");
-  const [bio, setBio] = useState(user?.user?.bio || "");
-  const [frontEndImg, setFrontEndImg] = useState(user?.user?.photo);
+  const [name, setName] = useState(userData.fullName || "");
+  const [bio, setBio] = useState(userData.bio || "");
+  const [frontEndImg, setFrontEndImg] = useState(userData?.photo);
   const [backendImg, setBackEndImg] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -42,7 +42,7 @@ const ProfilePage = () => {
       );
       setSaving(false)
       toast.success( updatedUser.data.message ||"Profile Saved")
-      dispatch(addUser(updatedUser.data));
+      dispatch(addUser(updatedUser.data.userData));
       navigate("/");
     } catch (err) {
   console.log(err);

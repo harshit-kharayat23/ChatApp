@@ -8,7 +8,7 @@ import { addUser } from "../Redux/userSlice";
 
 export const useCurrentUser = () => {
     let dispatch = useDispatch();
-    let userData=useSelector(store=>store.user.loggedInUser);
+    let {userData}=useSelector(store=>store.user);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -16,7 +16,7 @@ export const useCurrentUser = () => {
         let userDetails = await axios.get(BACKEND_URL + "/getProfile", {
           withCredentials: true,
         });
-        dispatch(addUser(userDetails.data));
+        dispatch(addUser(userDetails.data.userData));
       } catch (err) {
         console.log(err);
       }

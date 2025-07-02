@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../lib/utils";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 import toast from "react-hot-toast";
 import {useDispatch, useSelector} from 'react-redux'
@@ -13,6 +13,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const dispatch= useDispatch();
+  const navigate=useNavigate();
 
 
   const handleSignUp = async (e) => {
@@ -24,8 +25,10 @@ const SignupPage = () => {
         { withCredentials: true }
       );
       console.log(response);
+      console.log(response.data);
       toast.success(response?.data?.message || "SignUp successful!");
-      dispatch(addUser(response?.data))
+      dispatch(addUser(response?.data?.userData))
+      navigate("/profile")
       setEmailId("");
       setFullName("");
       setPassword("");

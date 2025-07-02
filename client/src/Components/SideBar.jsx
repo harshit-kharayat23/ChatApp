@@ -1,12 +1,13 @@
 import React from 'react';
 import assets, { userDummyData } from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
-import {useSelector} from 'react-redux'
+import {useSelector,useDispatch} from 'react-redux'
+import { setSelectedUser } from "../Redux/userSlice";
 
 const SideBar = ({ selectedUser, setSelectUser }) => {
   const navigate = useNavigate();
-
-   const {loggedInUser,otherUsers}=useSelector(store=>store?.user);
+  const dispatch=useDispatch();
+   const {userData,otherUsers}=useSelector(store=>store?.user);
 
   const handleLogout = () => {
     navigate("/login");
@@ -21,9 +22,9 @@ const SideBar = ({ selectedUser, setSelectUser }) => {
         
           <div className="relative py-2 group">
             <img
-              src={loggedInUser?.user?.photo || assets.avatar_icon}
+              src={userData?.photo || assets.avatar_icon}
               className="w-[45px] aspect-square rounded-full bg-contain"
-              alt={loggedInUser?.user?.fullName}
+              alt={userData?.fullName}
             />
 
             <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block">
@@ -47,10 +48,10 @@ const SideBar = ({ selectedUser, setSelectUser }) => {
 
       {/* User List */}
       <div className="flex flex-col">
-        {otherUsers?.users?.map((user, index) => (
+        {otherUsers?.map((user, index) => (
           
           <div
-            onClick={()=>{setSelectUser(user)}}
+            onClick={()=>{dispatch(setSelectedUser(user))}}
             key={index}
             className={`relative flex items-center gap-2 p-2 pl-4 rounded-md cursor-pointer max-sm:text-sm transition-all duration-200 ${
               selectedUser?._id === user._id && 'bg-[#282142]/50'

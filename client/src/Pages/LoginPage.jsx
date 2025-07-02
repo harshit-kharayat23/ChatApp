@@ -22,7 +22,7 @@ const LoginPage = () => {
         { emailId: email, password },
         { withCredentials: true }
       );
-      dispatch(addUser(response?.data?.user));
+      dispatch(addUser(response?.data?.userData));
       
       setEmail("");
       setPassword("");

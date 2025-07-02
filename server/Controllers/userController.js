@@ -42,7 +42,7 @@ export const signUp = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Account created successfully.",
-      user: newUser,
+      userData: newUser,
     });
   } catch (err) {
     return res.status(500).json({
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Logged in successfully!",
-      user:user,
+      userData:user,
     });
   } catch (err) {
     return res.status(500).json({
@@ -149,7 +149,7 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Profile updated successfully!",
-      user: updatedUser,
+      userData: updatedUser,
     });
 
   } catch (err) {
@@ -172,7 +172,7 @@ export const getProfile = async (req, res) => {
     }
     res.status(200).json({
       success: true,
-      user: userDetails,
+      userData: userDetails,
     });
   } catch (err) {
     res.status(500).json({

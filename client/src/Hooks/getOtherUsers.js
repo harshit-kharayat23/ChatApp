@@ -6,7 +6,7 @@ import { addOtherUsers } from "../Redux/userSlice";
 
 export const useOtherUsers = () => {
   const dispatch = useDispatch();
-  const userData = useSelector((store) => store.user.loggedInUser);
+  const {userData} = useSelector((store) => store.user);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -14,7 +14,7 @@ export const useOtherUsers = () => {
         let response = await axios.get(BACKEND_URL + "/users", {
           withCredentials: true,
         });
-        dispatch(addOtherUsers(response.data));
+        dispatch(addOtherUsers(response.data.users));
       } catch (err) {
         console.log("Error fetching other users:", err);
       }

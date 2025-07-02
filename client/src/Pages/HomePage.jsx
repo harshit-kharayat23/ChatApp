@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import SideBar from "../Components/SideBar";
 import ChatContainer from "../Components/ChatContainer";
 import RightSideBar from "../Components/RightSideBar";
+import { useGetMessages } from "../Hooks/useGetMessages";
+import {useSelector} from "react-redux";
 
 const HomePage = () => {
-  const [selectedUser, setSelectUser] = useState(false);
+
+
+  useGetMessages();
+  const {selectedUser}=useSelector(store=>store.user);
   return (
     <div className="border w-full h-screen sm:px-[15%] sm:py-[5%] text-amber-50">
       <div
@@ -14,16 +19,9 @@ const HomePage = () => {
             : "md:grid-cols-2"
         }`}
       >
- 
-        <SideBar selectedUser={selectedUser} setSelectUser={setSelectUser} />
-        <ChatContainer
-          selectedUser={selectedUser}
-          setSelectUser={setSelectUser}
-        />
-        <RightSideBar
-          selectedUser={selectedUser}
-          setSelectUser={setSelectUser}
-        />
+        <SideBar />
+        <ChatContainer/>
+        <RightSideBar/>
       </div>
     </div>
   );
