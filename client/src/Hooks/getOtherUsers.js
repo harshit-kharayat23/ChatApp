@@ -8,18 +8,21 @@ export const useOtherUsers = () => {
   const dispatch = useDispatch();
   const {userData} = useSelector((store) => store.user);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        let response = await axios.get(BACKEND_URL + "/users", {
-          withCredentials: true,
-        });
-        dispatch(addOtherUsers(response.data.users));
-      } catch (err) {
-        console.log("Error fetching other users:", err);
-      }
-    };
+ useEffect(() => {
+  if (!userData) return; // only run if userData is present
 
-    fetchUsers();
-  }, [userData]);
+  const fetchUsers = async () => {
+    try {
+      let response = await axios.get(BACKEND_URL + "/users", {
+        withCredentials: true,
+      });
+      dispatch(addOtherUsers(response.data.users));
+    } catch (err) {
+      console.log("Error fetching other users:", err);
+    }
+  };
+
+  fetchUsers();
+}, [userData]);
+
 };

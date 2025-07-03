@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import cloudinary, { uploadOnCloudinary } from "../lib/cloudinary.js";
 
 import Conversation from "../models/Conversation.js";
+import { getRecieverIdSocketId, io } from "../sockets/socket.js";
 
 // get all users for side bar
 
@@ -130,12 +131,11 @@ export const sendMessage = async (req, res) => {
       await conversation.save();
     }
 
-    // emit  the new message to the reciever 's socket
-
-    //    const targetSocketId=userSocketMap[targetId];
-    //    if(targetSocketId){
-    //         io.to(targetSocketId).emit("newMessage",newMessage)
-    //    }
+  
+    const recieverId=getRecieverIdSocketId(targetId);
+    if(recieverId){
+      io.to(recieverId).emit("newMessage",newMessage);
+    }
 
     res.status(201).json({
       success: true,

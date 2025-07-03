@@ -17,7 +17,6 @@ export const useGetMessages = () => {
           `${BACKEND_URL}/getMessages/${selectedUser._id}`,
           { withCredentials: true }
         );
-        console.log(result);
         dispatch(setMessages(result.data.messages));
       } catch (err) {
         console.error("Error fetching messages: ", err);

@@ -13,27 +13,6 @@ import { app, server } from './sockets/socket.js';
 
 
 
-export const userSocketMap={}; // online users
-
-// io.on("connection",(socket)=>{
-
-//     const userId=socket.handshake.query.userId;
-//     console.log("user connected ",userId)
-//     if(userId)
-//         userSocketMap[userId]=socket.id;
-
-
-//     io.emit("getOnlineUsers",Object.keys(userSocketMap))
-
-
-//     socket.on("disconnect",()=>{
-//         console.log("User disconnected",userId);
-//         delete userSocketMap[userId];
-//         io.emit("getOnlineUsers",Object.keys(userSocketMap))
-//     })
-
-// })
-
 
 // middlewares setup
 app.use(express.json());

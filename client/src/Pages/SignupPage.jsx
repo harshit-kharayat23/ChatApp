@@ -24,8 +24,6 @@ const SignupPage = () => {
         { fullName, emailId, password },
         { withCredentials: true }
       );
-      console.log(response);
-      console.log(response.data);
       toast.success(response?.data?.message || "SignUp successful!");
       dispatch(addUser(response?.data?.userData))
       navigate("/profile")
