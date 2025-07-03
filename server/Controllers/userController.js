@@ -1,7 +1,8 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import cloudinary, { uploadOnCloudinary } from "../lib/cloudinary.js";
+import { uploadOnCloudinary } from "../lib/cloudinary.js";
+import {validateUser} from '../middlewares/validate.js'
 
 export const signUp = async (req, res) => {
   const { fullName, emailId, password } = req.body;
@@ -13,6 +14,8 @@ export const signUp = async (req, res) => {
         message: "All fields are required!",
       });
     }
+    validateUser(req);
+    
 
     const existingUser = await User.findOne({ emailId });
     if (existingUser) {
@@ -39,10 +42,14 @@ export const signUp = async (req, res) => {
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
+    // converting to plain object and removing password
+    const newUserWithoutPass=newUser.toObject();
+    delete newUserWithoutPass.password;
+
     return res.status(201).json({
       success: true,
       message: "Account created successfully.",
-      userData: newUser,
+      userData: newUserWithoutPass,
     });
   } catch (err) {
     return res.status(500).json({
@@ -62,6 +69,7 @@ export const login = async (req, res) => {
         message: "All fields are required!",
       });
     }
+     validateUser(req);
 
     const user = await User.findOne({ emailId });
     if (!user) {
@@ -87,11 +95,13 @@ export const login = async (req, res) => {
       sameSite: "Lax",
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
+    const newUserWithoutPass=user.toObject();
+    delete newUserWithoutPass.password;
 
     return res.status(200).json({
       success: true,
       message: "Logged in successfully!",
-      userData:user,
+      userData:newUserWithoutPass,
     });
   } catch (err) {
     return res.status(500).json({

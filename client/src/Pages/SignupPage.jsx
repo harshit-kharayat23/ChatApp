@@ -11,6 +11,7 @@ const SignupPage = () => {
   const [fullName, setFullName] = useState("");
   const [emailId, setEmailId] = useState("");
   const [password, setPassword] = useState("");
+  const [agreed,setAgreed]=useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dispatch= useDispatch();
   const navigate=useNavigate();
@@ -18,6 +19,11 @@ const SignupPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if(!agreed){
+      toast.error("Please agree to the terms & privacy policy.");
+        return ;
+    }
+
     try {
       const response = await axios.post(
         BACKEND_URL + "/signup",
@@ -56,16 +62,15 @@ const SignupPage = () => {
           onChange={(e) => setFullName(e.target.value)}
           className="p-2 border border-gray-500 rounded-md focus:outline-none"
           placeholder="Full Name"
-          required
         />
 
         <input
           onChange={(e) => setEmailId(e.target.value)}
           value={emailId}
-          type="email"
+          type="text"
           placeholder="Email Address"
           className="p-2 border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
+
         />
 
         <div className="relative">
@@ -75,7 +80,7 @@ const SignupPage = () => {
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             className="p-2 pr-10 w-full border border-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
+
           />
           <span
             onClick={() => setShowPassword(!showPassword)}
@@ -86,7 +91,7 @@ const SignupPage = () => {
         </div>
 
         <div className="flex items-center gap-2 text-sm text-gray-500">
-          <input type="checkbox" required />
+          <input type="checkbox" checked={agreed}  onChange={(e)=>setAgreed(e.target.checked)}/>
           <p>Agree to the terms of use & privacy policy.</p>
         </div>
 
