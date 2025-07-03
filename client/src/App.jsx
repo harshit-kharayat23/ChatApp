@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import HomePage from "./Pages/HomePage";
@@ -11,6 +10,8 @@ import { useOtherUsers } from "./Hooks/getOtherUsers";
 import { SocketProvider } from "./contexts/SocketContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setOnlineUsers } from "./Redux/userSlice";
+import bgImage from "./assets/bgImage.svg";
+
 
 function App() {
   useCurrentUser();
@@ -24,7 +25,10 @@ function App() {
 
   return (
     <SocketProvider userId={userData?._id} onGetOnlineUsers={handleOnlineUsers}>
-      <div className="bg-[url('./src/assets/bgImage.svg')] bg-cover bg-center min-h-screen">
+      <div
+        className="bg-cover bg-center min-h-screen"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
         <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
 
         <Routes>

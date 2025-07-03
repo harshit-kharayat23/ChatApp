@@ -27,13 +27,13 @@ app.use(cors({
 
 
 
-app.get("/api/auth",(req,res)=>{
+app.get("/",(req,res)=>{
         res.send("Server is live")
 });
 
-app.use("/api/auth", userRouter);       
-app.use("/api/auth", profileRouter);    
-app.use("/api/auth", messageRouter); 
+app.use("/", userRouter);       
+app.use("/", profileRouter);    
+app.use("/", messageRouter); 
 
 
 
