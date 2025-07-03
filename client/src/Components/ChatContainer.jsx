@@ -172,7 +172,7 @@ useEffect(() => {
           src={selectedUser.photo}
           className="w-8 rounded-full cursor-pointer"
           alt="User"
-          onClick={() => setShowProfileSidebar(true)} // 👈 Tap to open profile sidebar on mobile
+          onClick={() => setShowProfileSidebar(true)} 
         />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
           {selectedUser.fullName}
