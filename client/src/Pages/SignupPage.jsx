@@ -17,34 +17,43 @@ const SignupPage = () => {
   const navigate=useNavigate();
 
 
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    if(!agreed){
-      toast.error("Please agree to the terms & privacy policy.");
-        return ;
-    }
+ const handleSignUp = async (e) => {
+  e.preventDefault();
+  if (!agreed) {
+    toast.error("Please agree to the terms & privacy policy.");
+    return;
+  }
 
-    try {
-      const response = await axios.post(
-        BACKEND_URL + "/signup",
-        { fullName, emailId, password },
-        { withCredentials: true }
-      );
-      toast.success(response?.data?.message || "SignUp successful!");
-      dispatch(addUser(response?.data?.userData))
-      navigate("/profile")
-      setEmailId("");
-      setFullName("");
-      setPassword("");
-      
-    }catch (err) {
-  console.log("Catch block fired with error:", err);
-  const message = err?.response?.data?.message || "Something went wrong.";
-  toast.error(message);
-}
+  try {
+    const response = await axios.post(BACKEND_URL + "/signup", {
+      fullName,
+      emailId,
+      password,
+    });
 
+    const user = response?.data?.userData;
+    const token = response?.data?.token;
 
-  };
+    // Save to Redux
+    dispatch(addUser({ user, token }));
+
+    // Save to localStorage
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
+
+    toast.success(response?.data?.message || "SignUp successful!");
+    navigate("/profile");
+
+    setEmailId("");
+    setFullName("");
+    setPassword("");
+  } catch (err) {
+    console.log("Catch block fired with error:", err);
+    const message = err?.response?.data?.message || "Something went wrong.";
+    toast.error(message);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl">

@@ -3,7 +3,7 @@ import assets from "../assets/assets";
 import axios from "axios";
 import { BACKEND_URL } from "../lib/utils";
 import toast from "react-hot-toast";
-import { addOtherUsers, addUser } from "../Redux/userSlice";
+import { addOtherUsers, addUser, logOutUser } from "../Redux/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -13,22 +13,22 @@ const RightSideBar = () => {
   const { selectedUser } = useSelector((store) => store.user);
   const { messages } = useSelector((store) => store.message);
 
-  const handleLogout = async () => {
-    try {
-      const response = await axios.post(
-        `${BACKEND_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
-      dispatch(addUser(null));
-      dispatch(addOtherUsers(null));
-      navigate("/login");
-      toast.success(response.data.message);
-    } catch (err) {
-      const message = err?.response?.data?.message;
-      toast.error(message);
-    }
-  };
+ const handleLogout = async () => {
+  try {
+    await axios.post(`${BACKEND_URL}/logout`, {}, { withCredentials: true });
+
+    dispatch(logOutUser());
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    navigate("/login");
+    toast.success("Logged out successfully!");
+  } catch (err) {
+    console.error("Logout failed:", err);
+    toast.error(err?.response?.data?.message || "Logout failed!");
+  }
+};
+
 
   return (
     selectedUser && (

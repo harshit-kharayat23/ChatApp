@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const {userData} = useSelector((store) => store?.user);
+  const {userData,token} = useSelector((store) => store?.user);
   const dispatch = useDispatch();
 
   const [name, setName] = useState(userData.fullName || "");
@@ -25,32 +25,47 @@ const ProfilePage = () => {
     setFrontEndImg(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e) => {
-    setSaving(true);
-    e.preventDefault();
-    try {
-      let formData = new FormData();
-      formData.append("fullName", name);
-      formData.append("bio", bio);
-      if (backendImg) {
-        formData.append("photo", backendImg);
-      }
-      let updatedUser = await axios.put(
-        BACKEND_URL + "/updateProfile",
-        formData,
-        { withCredentials: true }
-      );
-      setSaving(false)
-      toast.success( updatedUser.data.message ||"Profile Saved")
-      dispatch(addUser(updatedUser.data.userData));
-      navigate("/");
-    } catch (err) {
-  console.log(err);
-  toast.error(err?.response?.data?.message || "Error Occurred");
-  setSaving(false);
-}
+const handleSubmit = async (e) => {
+  setSaving(true);
+  e.preventDefault();
 
-  };
+  try {
+    let formData = new FormData();
+    formData.append("fullName", name);
+    formData.append("bio", bio);
+    if (backendImg) {
+      formData.append("photo", backendImg);
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    let updatedUser = await axios.put(
+      BACKEND_URL + "/updateProfile",
+      formData,
+      config
+    );
+
+    const updated = updatedUser.data.userData;
+
+    // ✅ Update Redux and localStorage
+    dispatch(addUser({ user: updated, token }));
+    localStorage.setItem("user", JSON.stringify(updated));
+
+    setSaving(false);
+    toast.success(updatedUser.data.message || "Profile Saved");
+  } catch (err) {
+    console.log(err);
+    toast.error(err?.response?.data?.message || "Error Occurred");
+    setSaving(false);
+  }
+};
+
+
 
   return (
     <>

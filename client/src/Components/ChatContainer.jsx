@@ -36,39 +36,46 @@ const ChatContainer = () => {
   };
 
   const sendMessage = async () => {
-    if (!message.trim() && !backendImg) return;
+  if (!message.trim() && !backendImg) return;
 
-    const tempId = "temp-" + Date.now();
+  const tempId = "temp-" + Date.now();
 
-    const tempMessage = {
-      _id: tempId,
-      senderId: { _id: userData._id, photo: userData.photo },
-      text: message,
-      image: frontEndImg,
-      createdAt: new Date().toISOString(),  
-      isTemp: true,
-    };
-
-    dispatch(addMessage(tempMessage));
-
-    const formData = new FormData();
-    formData.append("text", message);
-    if (backendImg) formData.append("image", backendImg);
-
-    try {
-      const result = await axios.post(
-        `${BACKEND_URL}/sendMessage/${selectedUser._id}`,
-        formData,
-        { withCredentials: true }
-      );
-
-      dispatch(replaceMessage({ tempId, newMessage: result.data.newMessage }));
-    } catch (err) {
-      console.error("Message send failed", err);
-    }
-
-    resetInputs();
+  const tempMessage = {
+    _id: tempId,
+    senderId: { _id: userData._id, photo: userData.photo },
+    text: message,
+    image: frontEndImg,
+    createdAt: new Date().toISOString(),
+    isTemp: true,
   };
+
+  dispatch(addMessage(tempMessage));
+
+  const formData = new FormData();
+  formData.append("text", message);
+  if (backendImg) formData.append("image", backendImg);
+
+  try {
+    const token = localStorage.getItem("token"); // 🔐 Get token
+
+    const result = await axios.post(
+      `${BACKEND_URL}/sendMessage/${selectedUser._id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // 🟢 Attach Bearer token
+        },
+      }
+    );
+
+    dispatch(replaceMessage({ tempId, newMessage: result.data.newMessage }));
+  } catch (err) {
+    console.error("Message send failed", err);
+  }
+
+  resetInputs();
+};
+
 
   const resetInputs = () => {
     setMessage("");
@@ -212,12 +219,18 @@ useEffect(() => {
               .reverse()
               .slice(0, 6)
               .map((msg, idx) => (
+                 <div
+                  key={idx}
+                  onClick={() => window.open(msg.image, "_blank")}
+                  className="cursor-pointer overflow-hidden rounded"
+                >
                 <img
                   key={idx}
                   src={msg.image}
                   alt="Media"
                   className="w-full h-20 object-cover rounded"
                 />
+                </div>
               ))}
           </div>
         </div>

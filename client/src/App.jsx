@@ -9,15 +9,26 @@ import { useCurrentUser } from "./Hooks/useCurrentUser";
 import { useOtherUsers } from "./Hooks/getOtherUsers";
 import { SocketProvider } from "./contexts/SocketContext";
 import { useDispatch, useSelector } from "react-redux";
-import { setOnlineUsers } from "./Redux/userSlice";
+import { setOnlineUsers, addUser } from "./Redux/userSlice";
 import bgImage from "./assets/bgImage.svg";
-
+import { useEffect } from "react";
 
 function App() {
-  useCurrentUser();
-  useOtherUsers();
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state?.user);
+
+  // 🟨 Restore Redux state from localStorage on app load
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
+
+    if (storedUser && storedToken) {
+      dispatch(addUser({ user: JSON.parse(storedUser), token: storedToken }));
+    }
+  }, [dispatch]);
+
+  useCurrentUser(); // 🔁 Fetch current user data again to keep synced
+  useOtherUsers();  // 👥 Get other users when userData is available
 
   const handleOnlineUsers = (users) => {
     dispatch(setOnlineUsers(users));

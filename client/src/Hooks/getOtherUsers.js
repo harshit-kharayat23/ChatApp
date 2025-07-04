@@ -6,23 +6,24 @@ import { addOtherUsers } from "../Redux/userSlice";
 
 export const useOtherUsers = () => {
   const dispatch = useDispatch();
-  const {userData} = useSelector((store) => store.user);
+  const { userData, token } = useSelector((store) => store.user);
 
- useEffect(() => {
-  if (!userData) return; // only run if userData is present
+  useEffect(() => {
+    if (!userData || !token) return; // wait for both user and token
 
-  const fetchUsers = async () => {
-    try {
-      let response = await axios.get(BACKEND_URL + "/users", {
-        withCredentials: true,
-      });
-      dispatch(addOtherUsers(response.data.users));
-    } catch (err) {
-      console.log("Error fetching other users:", err);
-    }
-  };
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get(BACKEND_URL + "/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        dispatch(addOtherUsers(response.data.users));
+      } catch (err) {
+        console.log("Error fetching other users:", err?.response?.data?.message || err.message);
+      }
+    };
 
-  fetchUsers();
-}, [userData]);
-
+    fetchUsers();
+  }, [userData, token, dispatch]);
 };

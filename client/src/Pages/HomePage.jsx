@@ -9,7 +9,7 @@ const HomePage = () => {
 
 
   useGetMessages();
-  const {selectedUser,profile}=useSelector(store=>store.user);
+  const {selectedUser}=useSelector(store=>store.user);
   return (
     <div className="border w-full h-screen sm:px-[15%] sm:py-[5%] text-amber-50">
       <div

@@ -6,23 +6,27 @@ import { setMessages } from "../Redux/messageSlice";
 
 export const useGetMessages = () => {
   const dispatch = useDispatch();
-  const { userData, selectedUser } = useSelector((store) => store.user);
+  const { userData, selectedUser, token } = useSelector((store) => store.user);
 
   useEffect(() => {
-    if (!selectedUser || !userData) return; // prevent premature fetch
+    if (!selectedUser || !userData || !token) return; // ensure all required data
 
     const fetchMessages = async () => {
       try {
         const result = await axios.get(
           `${BACKEND_URL}/getMessages/${selectedUser._id}`,
-          { withCredentials: true }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         dispatch(setMessages(result.data.messages));
       } catch (err) {
-        console.error("Error fetching messages: ", err);
+        console.error("Error fetching messages: ", err?.response?.data?.message || err.message);
       }
     };
 
     fetchMessages();
-  }, [selectedUser, userData]);
+  }, [selectedUser, userData, token, dispatch]);
 };

@@ -4,23 +4,27 @@ import { BACKEND_URL } from "../lib/utils";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../Redux/userSlice";
 
-
-
 export const useCurrentUser = () => {
-    let dispatch = useDispatch();
-    let {userData}=useSelector(store=>store.user);
+  const dispatch = useDispatch();
+  const { token } = useSelector((store) => store.user);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        let userDetails = await axios.get(BACKEND_URL + "/getProfile", {
-          withCredentials: true,
+        if (!token) return; // No token, skip fetch
+
+        const res = await axios.get(`${BACKEND_URL}/getProfile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        dispatch(addUser(userDetails.data.userData));
+
+        dispatch(addUser({ user: res.data.userData, token }));
       } catch (err) {
-        console.log(err);
+        console.log("Error fetching current user:", err?.response?.data?.message || err.message);
       }
     };
+
     fetchUser();
-  }, []);
+  }, [dispatch, token]);
 };
