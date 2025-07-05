@@ -10,4 +10,6 @@ export const formatMessageTime=(date)=>{
 }
 
 
-export const BACKEND_URL="https://chitchat-p5hh.onrender.com";
+
+export const BACKEND_URL = "http://localhost:3000";
+
