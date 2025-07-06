@@ -18,7 +18,7 @@ import { app, server } from './sockets/socket.js';
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: "https://chit-chat-qyxv.onrender.com", 
   credentials: true                 
 }));
 
