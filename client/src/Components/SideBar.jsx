@@ -56,7 +56,11 @@ const SideBar = () => {
         {/* Header */}
         <div className="pb-5">
           <div className="flex justify-between items-center">
-            <img src={assets.logo} className="max-w-40" alt="Logo" />
+            <div className='flex items-center justify-between gap-2'>
+            <img src="/favicon.svg" className="max-w-10" alt="Logo" />
+            <span className=' text-xl'>Chit Chat</span>
+            </div>
+
             <div
               className="relative py-2 group cursor-pointer"
               onClick={() => navigate("/profile")}

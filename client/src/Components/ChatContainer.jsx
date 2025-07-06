@@ -55,14 +55,14 @@ const ChatContainer = () => {
     if (backendImg) formData.append("image", backendImg);
 
     try {
-      const token = localStorage.getItem("token"); // 🔐 Get token
+      const token = localStorage.getItem("token"); 
 
       const result = await axios.post(
         `${BACKEND_URL}/sendMessage/${selectedUser._id}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // 🟢 Attach Bearer token
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
@@ -172,14 +172,14 @@ const ChatContainer = () => {
   return (
     <div className="h-full overflow-y-scroll relative backdrop-blur-lg p-2 cursor-pointer">
       {/* header */}
-      <div className="flex items-center gap-3 py-3 mx-4 border-b border-stone-500">
+      <div className="flex items-center justify-center gap-3 py-3 mx-4 border-b border-stone-500">
         <img
           src={selectedUser.photo}
-          className="w-8 rounded-full cursor-pointer"
+          className="w-8 rounded-full aspect-square object-cover cursor-pointer"
           alt="User"
           onClick={() => setShowProfileSidebar(true)}
         />
-        <p className="flex-1 text-lg text-white flex items-center gap-2">
+        <p className="flex-1 text-md text-white flex items-center gap-2">
           {selectedUser.fullName}
           {onlineUsers.includes(selectedUser._id) && (
             <span className="w-2 h-2 rounded-full bg-green-500"></span>
@@ -258,7 +258,7 @@ const ChatContainer = () => {
                 }}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Send a message"
-                className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400 bg-transparent"
+                className="flex-1 text-base p-3 border-none rounded-lg outline-none text-white placeholder-gray-400 bg-transparent"
               />
               <input
                 type="file"
