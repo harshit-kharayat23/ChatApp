@@ -51,8 +51,14 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl">
-      <img src={assets.logo_big} alt="Logo" className="w-[min(30vw,250px)]" />
-
+      <div className="flex flex-col items-center justify-center text-white">
+          <img
+          src="/favicon.svg"
+          alt="Logo"
+          className="h-[9vw] md:h-[7vw] w-auto max-h-24"
+        />
+        <h1 className="text-2xl md:text-5xl my-2 font-medium">Chit Chat</h1>
+      </div>
       <form
         onSubmit={handleLogin}
         className="w-[min(90vw,400px)] border-2 bg-white/10 text-white border-gray-500 p-8 flex flex-col gap-6 rounded-lg shadow-lg backdrop-blur-md"

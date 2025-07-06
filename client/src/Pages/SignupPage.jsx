@@ -19,10 +19,19 @@ const SignupPage = () => {
 
  const handleSignUp = async (e) => {
   e.preventDefault();
+    // 1. Basic frontend validation
+  if (!fullName || !emailId || !password) {
+    toast.error("Please fill all the required fields.");
+    return;
+  }
+
+  // 2. Check agreement
   if (!agreed) {
     toast.error("Please agree to the terms & privacy policy.");
     return;
   }
+
+
 
   try {
     const response = await axios.post(BACKEND_URL + "/signup", {
@@ -30,14 +39,14 @@ const SignupPage = () => {
       emailId,
       password,
     });
+     
 
     const user = response?.data?.userData;
     const token = response?.data?.token;
 
-    // Save to Redux
     dispatch(addUser({ user, token }));
 
-    // Save to localStorage
+e
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
 
@@ -57,7 +66,15 @@ const SignupPage = () => {
 
   return (
     <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl">
-      <img src={assets.logo_big} alt="" className="w-[min(30vw,250px)]" />
+     <div className="flex flex-col items-center justify-center text-white">
+          <img
+          src="/favicon.svg"
+          alt="Logo"
+          className="h-[9vw] md:h-[7vw] w-auto max-h-24"
+        />
+        <h1 className="text-2xl md:text-5xl my-2 font-medium">Chit Chat</h1>
+      </div>
+
 
        <form
         onSubmit={handleSignUp}
