@@ -11,7 +11,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // prevent double click
+  const [isLoading, setIsLoading] = useState(false); 
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

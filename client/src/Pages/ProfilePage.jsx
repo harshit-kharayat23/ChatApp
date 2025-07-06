@@ -52,11 +52,11 @@ const handleSubmit = async (e) => {
 
     const updated = updatedUser.data.userData;
 
-    // ✅ Update Redux and localStorage
     dispatch(addUser({ user: updated, token }));
     localStorage.setItem("user", JSON.stringify(updated));
 
     setSaving(false);
+    navigate("/");
     toast.success(updatedUser.data.message || "Profile Saved");
   } catch (err) {
     console.log(err);

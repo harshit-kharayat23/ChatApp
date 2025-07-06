@@ -13,22 +13,21 @@ const RightSideBar = () => {
   const { selectedUser } = useSelector((store) => store.user);
   const { messages } = useSelector((store) => store.message);
 
- const handleLogout = async () => {
-  try {
-    await axios.post(`${BACKEND_URL}/logout`, {}, { withCredentials: true });
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${BACKEND_URL}/logout`, {}, { withCredentials: true });
 
-    dispatch(logOutUser());
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+      dispatch(logOutUser());
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
-    navigate("/login");
-    toast.success("Logged out successfully!");
-  } catch (err) {
-    console.error("Logout failed:", err);
-    toast.error(err?.response?.data?.message || "Logout failed!");
-  }
-};
-
+      navigate("/login");
+      toast.success("Logged out successfully!");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      toast.error(err?.response?.data?.message || "Logout failed!");
+    }
+  };
 
   return (
     selectedUser && (
@@ -55,14 +54,13 @@ const RightSideBar = () => {
         <hr className="border-[#ffffff30] my-4" />
 
         {/* Media Section */}
-        {/* Media Section */}
         <div className="px-5 text-xs overflow-hidden">
           <p className="text-sm text-gray-200 mb-2 font-medium">Media</p>
           <div className="max-h-[250px] overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2">
             {messages
               .filter((msg) => msg.image)
-              .slice() // create shallow copy to avoid mutating original
-              .reverse() // reverse to get latest first
+              .slice()
+              .reverse()
               .map((msg, index) => (
                 <div
                   key={index}

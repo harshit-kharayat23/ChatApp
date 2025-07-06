@@ -19,13 +19,12 @@ const SignupPage = () => {
 
  const handleSignUp = async (e) => {
   e.preventDefault();
-    // 1. Basic frontend validation
+
   if (!fullName || !emailId || !password) {
     toast.error("Please fill all the required fields.");
     return;
   }
 
-  // 2. Check agreement
   if (!agreed) {
     toast.error("Please agree to the terms & privacy policy.");
     return;

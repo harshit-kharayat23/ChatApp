@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import assets from '../assets/assets';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -14,7 +14,22 @@ const SideBar = () => {
   const { userData, otherUsers, onlineUsers, selectedUser } = useSelector(store => store?.user);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [showLogoutMenu, setShowLogoutMenu] = useState(false); // 👈 for dropdown toggle
+  const [showLogoutMenu, setShowLogoutMenu] = useState(false);
+
+  const logoutMenuRef = useRef(null);
+
+  // Hide logout menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (logoutMenuRef.current && !logoutMenuRef.current.contains(event.target)) {
+        setShowLogoutMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const filteredUsers = otherUsers?.filter((user) =>
     user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -35,7 +50,9 @@ const SideBar = () => {
 
   return (
     <div className={`bg-[#8185B2]/10 h-full p-5 flex flex-col justify-between rounded-r-xl text-white ${selectedUser ? 'max-md:hidden' : ''}`}>
-      <div>
+      
+      {/* Top Section */}
+      <div className="flex flex-col h-full">
         {/* Header */}
         <div className="pb-5">
           <div className="flex justify-between items-center">
@@ -74,7 +91,8 @@ const SideBar = () => {
         </div>
 
         {/* User List */}
-        <div className="flex flex-col mt-4">
+        <div className="flex flex-col overflow-y-auto max-h-[425px] md:max-h-[350px] lg:max-h-[365px] ">
+
           {filteredUsers?.length > 0 ? (
             filteredUsers.map((user) => (
               <div
@@ -105,8 +123,8 @@ const SideBar = () => {
         </div>
       </div>
 
-      {/* Bottom Settings + Logout */}
-      <div className="relative mt-4 px-1">
+      {/* Bottom Section - Settings */}
+      <div className="relative mt-4 px-1" ref={logoutMenuRef}>
         <button
           onClick={() => setShowLogoutMenu((prev) => !prev)}
           className="flex items-center gap-2 text-white hover:text-violet-400 transition text-sm"

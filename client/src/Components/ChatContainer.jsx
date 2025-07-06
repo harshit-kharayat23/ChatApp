@@ -10,7 +10,6 @@ import { addMessage, replaceMessage } from "../Redux/messageSlice";
 import { CiLogout } from "react-icons/ci";
 import { useSocket } from "../contexts/SocketContext";
 
-
 const ChatContainer = () => {
   const scrollEnd = useRef();
   const dispatch = useDispatch();
@@ -36,46 +35,45 @@ const ChatContainer = () => {
   };
 
   const sendMessage = async () => {
-  if (!message.trim() && !backendImg) return;
+    if (!message.trim() && !backendImg) return;
 
-  const tempId = "temp-" + Date.now();
+    const tempId = "temp-" + Date.now();
 
-  const tempMessage = {
-    _id: tempId,
-    senderId: { _id: userData._id, photo: userData.photo },
-    text: message,
-    image: frontEndImg,
-    createdAt: new Date().toISOString(),
-    isTemp: true,
+    const tempMessage = {
+      _id: tempId,
+      senderId: { _id: userData._id, photo: userData.photo },
+      text: message,
+      image: frontEndImg,
+      createdAt: new Date().toISOString(),
+      isTemp: true,
+    };
+
+    dispatch(addMessage(tempMessage));
+
+    const formData = new FormData();
+    formData.append("text", message);
+    if (backendImg) formData.append("image", backendImg);
+
+    try {
+      const token = localStorage.getItem("token"); // 🔐 Get token
+
+      const result = await axios.post(
+        `${BACKEND_URL}/sendMessage/${selectedUser._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 🟢 Attach Bearer token
+          },
+        }
+      );
+
+      dispatch(replaceMessage({ tempId, newMessage: result.data.newMessage }));
+    } catch (err) {
+      console.error("Message send failed", err);
+    }
+
+    resetInputs();
   };
-
-  dispatch(addMessage(tempMessage));
-
-  const formData = new FormData();
-  formData.append("text", message);
-  if (backendImg) formData.append("image", backendImg);
-
-  try {
-    const token = localStorage.getItem("token"); // 🔐 Get token
-
-    const result = await axios.post(
-      `${BACKEND_URL}/sendMessage/${selectedUser._id}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // 🟢 Attach Bearer token
-        },
-      }
-    );
-
-    dispatch(replaceMessage({ tempId, newMessage: result.data.newMessage }));
-  } catch (err) {
-    console.error("Message send failed", err);
-  }
-
-  resetInputs();
-};
-
 
   const resetInputs = () => {
     setMessage("");
@@ -88,19 +86,19 @@ const ChatContainer = () => {
     scrollEnd.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-const socket = useSocket();  // <-- get socket from context here
+  const socket = useSocket();
 
-useEffect(() => {
-  if (!socket) return;
-  
-  socket.on("newMessage", (msg) => {
-    dispatch(addMessage(msg));
-  });
+  useEffect(() => {
+    if (!socket) return;
 
-  return () => {
-    socket.off("newMessage");
-  };
-}, [dispatch, socket]);
+    socket.on("newMessage", (msg) => {
+      dispatch(addMessage(msg));
+    });
+
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [dispatch, socket]);
 
   useEffect(() => {
     handleImageScroll();
@@ -179,7 +177,7 @@ useEffect(() => {
           src={selectedUser.photo}
           className="w-8 rounded-full cursor-pointer"
           alt="User"
-          onClick={() => setShowProfileSidebar(true)} 
+          onClick={() => setShowProfileSidebar(true)}
         />
         <p className="flex-1 text-lg text-white flex items-center gap-2">
           {selectedUser.fullName}
@@ -205,33 +203,34 @@ useEffect(() => {
           </button>
           <img
             src={selectedUser.photo}
-            className="w-20 rounded-full"
+            className="w-25 aspect-square rounded-full object-cover"
             alt={selectedUser.fullName}
           />
           <p className="text-lg">{selectedUser.fullName}</p>
-          <p className="text-sm text-gray-400">
+          <p className="text-md text-gray-300">
             {selectedUser.bio || "Hey there, I'm using QuickChat!"}
           </p>
-          <div className="grid grid-cols-3 gap-2 mt-5">
-            {/* Map recent images here */}
-            {messages
-              .filter((msg) => msg.image)
-              .reverse()
-              .slice(0, 6)
-              .map((msg, idx) => (
-                 <div
-                  key={idx}
-                  onClick={() => window.open(msg.image, "_blank")}
-                  className="cursor-pointer overflow-hidden rounded"
-                >
-                <img
-                  key={idx}
-                  src={msg.image}
-                  alt="Media"
-                  className="w-full h-20 object-cover rounded"
-                />
-                </div>
-              ))}
+          <div className="px-5 text-xs overflow-hidden">
+            <p className="text-sm text-gray-200 mb-2 font-medium">Media</p>
+            <div className="max-h-[450px] md:max-h-[270px] lg:md:max-h-[250px]  overflow-y-auto grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {messages
+                .filter((msg) => msg.image)
+                .slice()
+                .reverse()
+                .map((msg, index) => (
+                  <div
+                    key={index}
+                    onClick={() => window.open(msg.image, "_blank")}
+                    className="cursor-pointer overflow-hidden rounded"
+                  >
+                    <img
+                      src={msg.image}
+                      alt="media"
+                      className="w-full h-24 sm:h-28 object-cover rounded-md"
+                    />
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       ) : (
@@ -252,6 +251,11 @@ useEffect(() => {
               <input
                 type="text"
                 value={message}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && message.trim()) {
+                    sendMessage();
+                  }
+                }}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Send a message"
                 className="flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400 bg-transparent"
