@@ -8,8 +8,9 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: 'https://chit-chat-qyxv.onrender.com'  
+    origin: "https://chit-chat-qyxv.onrender.com",
     methods: ['GET', 'POST']
+
   }
 });
 
