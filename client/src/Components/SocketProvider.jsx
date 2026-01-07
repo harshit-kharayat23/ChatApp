@@ -11,7 +11,7 @@ const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userData && !socket) {
-      const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
+      const newSocket = io(import.meta.env.VITE_API_URL, {
         query: { userId: userData._id },
       });
       setSocket(newSocket);
