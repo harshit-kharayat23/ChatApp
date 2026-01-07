@@ -1,51 +1,42 @@
-import express from 'express'
 import "dotenv/config";
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
-import { connectDB } from './lib/db.js';
-import userRouter from './routes/userRoutes.js';
-import profileRouter from './routes/profileRoutes.js';
-import messageRouter from './routes/messageRoutes.js';
-import { app, server } from './sockets/socket.js';
+import { connectDB } from "./lib/db.js";
+import userRouter from "./routes/userRoutes.js";
+import profileRouter from "./routes/profileRoutes.js";
+import messageRouter from "./routes/messageRoutes.js";
+import { app, server } from "./sockets/socket.js";
 
-
-
-
-
-
-// middlewares setup
+// middlewares
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
+
 app.use(cors({
-  origin: "https://chat-app-three-taupe-56.vercel.app/", 
-  credentials: true                 
+  origin: "https://chat-app-three-taupe-56.vercel.app",
+  credentials: true
 }));
 
-
-
-
-
-
-app.get("/",(req,res)=>{
-        res.send("Server is live")
+// test route
+app.get("/", (req, res) => {
+  res.send("Server is live 🚀");
 });
 
-app.use("/", userRouter);       
-app.use("/", profileRouter);    
-app.use("/", messageRouter); 
+app.use("/", userRouter);
+app.use("/", profileRouter);
+app.use("/", messageRouter);
 
+// ✅ correct port for Render
+const PORT = process.env.PORT || 3000;
 
-
-const PORT=process.env.PORT_NUMBER || 3000;
-
-connectDB().then(()=>{
-    console.log("Database connected")
-    server.listen(PORT,()=>{
-    console.log(`server listening to port ${PORT}`)
-})
-
-}).catch(()=>{
-    console.log("Database did not connected!")
-})
-
+connectDB()
+  .then(() => {
+    console.log("Database connected");
+    server.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Database connection failed", err);
+  });
