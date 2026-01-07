@@ -11,5 +11,5 @@ export const formatMessageTime=(date)=>{
 
 
 
-export const BACKEND_URL = "https://chatapp-ofop.onrender.com/"
+export const BACKEND_URL = "https://chatapp-ofop.onrender.com"
 
