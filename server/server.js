@@ -18,7 +18,7 @@ import { app, server } from './sockets/socket.js';
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-  origin: "https://chit-chat-qyxv.onrender.com", 
+  origin: "https://chat-app-three-taupe-56.vercel.app/", 
   credentials: true                 
 }));
 
