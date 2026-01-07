@@ -10,7 +10,7 @@ export const SocketProvider = ({ userId, children, onGetOnlineUsers }) => {
 
   useEffect(() => {
     if (userId) {
-      const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`, {
+      const newSocket = io(`${import.meta.env.VITE_API_URLL;}`, {
         query: { userId },
       });
 
